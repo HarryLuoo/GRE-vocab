@@ -3,11 +3,8 @@ import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { ExploredWord, GeminiEvaluationResult } from "../types";
 import { GEMINI_MODEL_TEXT } from "../constants";
 
-const API_KEY = process.env.API_KEY;
+const API_KEY = "";
 
-if (!API_KEY) {
-  console.warn("Gemini API key not found. Word exploration and dynamic fetching features will be disabled.");
-}
 const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
 // Renaming to reflect it's an internal type for the service
@@ -68,6 +65,9 @@ export async function fetchWordDetails(word: string): Promise<ExploredWord | nul
       }
     });
     
+    if (!response.text) {
+      throw new Error("Gemini API response text is undefined.");
+    }
     let jsonStr = response.text.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
     const match = jsonStr.match(fenceRegex);
@@ -162,6 +162,9 @@ export async function fetchMultipleWordDetails(words: string[]): Promise<Record<
       }
     });
 
+    if (!response.text) {
+      throw new Error("Gemini API response text is undefined.");
+    }
     let jsonStr = response.text.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
     const match = jsonStr.match(fenceRegex);
@@ -266,6 +269,9 @@ export async function evaluateUserExplanation(word: string, definition: string, 
       }
     });
 
+    if (!response.text) {
+      throw new Error("Gemini API response text is undefined.");
+    }
     let jsonStr = response.text.trim();
     const fenceRegex = /^```(\w*)?\s*\n?(.*?)\n?\s*```$/s;
     const match = jsonStr.match(fenceRegex);
